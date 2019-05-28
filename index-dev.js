@@ -5,16 +5,28 @@ const {
 } = require('@wix/ambassador-node-workshop-scala-app/rpc');
 
 (async () => {
+  const commentsList = [];
+
   const ambassadorTestkit = new AmbassadorTestkit();
   const commentsServiceStub = ambassadorTestkit.createStub(
     NodeWorkshopScalaApp,
   );
+  //FETCH
   commentsServiceStub
     .CommentsService()
     .fetch.when(siteId => {
       return siteId === 'eb6f81e2-4b03-4d6e-955f-a1b4abf6bbcf';
     })
-    .resolve([{ author: 'Yaniv', comment: 'My great comment' }]);
+    .call(siteId => commentsList);
+
+  //ADD
+  commentsServiceStub
+    .CommentsService()
+    .add.when(siteId => {
+      return siteId === 'eb6f81e2-4b03-4d6e-955f-a1b4abf6bbcf';
+    })
+    .call((siteId, comment) => commentsList.push({comment}));
+
   const app = bootstrapServer();
 
   await emitConfigs();

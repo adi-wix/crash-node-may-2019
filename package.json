@@ -34,6 +34,7 @@
     "bootstrap-hot-loader": "^3.19.3",
     "express": "~4.15.0",
     "i18next": "^11.6.0",
+    "jest-mock-axios": "^3.0.0",
     "prop-types": "~15.6.0",
     "react": "16.8.0",
     "react-dom": "16.8.0",

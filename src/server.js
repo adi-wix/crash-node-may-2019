@@ -2,6 +2,7 @@ import wixExpressCsrf from '@wix/wix-express-csrf';
 import wixExpressRequireHttps from '@wix/wix-express-require-https';
 import { hot } from 'bootstrap-hot-loader';
 import { NodeWorkshopScalaApp } from '@wix/ambassador-node-workshop-scala-app/rpc';
+import bodyParser from 'body-parser';
 
 // This function is the main entry for our server. It accepts an express Router
 // (see http://expressjs.com) and attaches routes and middlewares to it.
@@ -24,12 +25,24 @@ export default hot(module, (app, context) => {
   // See https://github.com/wix-private/fed-infra/tree/master/wix-bootstrap-renderer.
   app.use(context.renderer.middleware());
 
+  app.use(bodyParser.json());
+
   app.get('/comments', async (req, res) => {
     const comments = await commentsService(req.aspects).fetch(
       'eb6f81e2-4b03-4d6e-955f-a1b4abf6bbcf',
     );
     res.send(comments);
   });
+
+  app.post('/addcomment', async (req, res) => {
+    const { comment } = req.body;
+    const comments = await commentsService(req.aspects).add(
+      'eb6f81e2-4b03-4d6e-955f-a1b4abf6bbcf', comment
+    );
+    res.send(comments);
+  });
+
+
   // Define a route to render our initial HTML.
   app.get('/', (req, res) => {
     // Extract some data from every incoming request.
@@ -38,6 +51,8 @@ export default hot(module, (app, context) => {
     // Send a response back to the client.
     res.renderView('./index.ejs', renderModel);
   });
+
+
 
   function getRenderModel(req) {
     const { language, basename, debug } = req.aspects['web-context'];
